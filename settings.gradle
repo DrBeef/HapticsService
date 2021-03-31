@@ -1,0 +1,4 @@
+include ':app:hapticservice'
+include ':app:hapticsservice'
+include ':app'
+rootProject.name = "HapticsService"

@@ -2,12 +2,15 @@ package com.drbeef.hapticservice;
 
 import android.content.Context;
 import android.os.RemoteException;
+import android.util.Log;
 
 import com.drbeef.hapticsservice.IHapticsService;
 
 public class HapticServiceImpl_bHaptics extends IHapticsService.Stub {
 
     private Context context;
+
+    private Object mutex = new Object();
 
     HapticServiceImpl_bHaptics(Context context)
     {
@@ -16,31 +19,54 @@ public class HapticServiceImpl_bHaptics extends IHapticsService.Stub {
 
     @Override
     public void hapticEvent(String a, String s, int i, int i1, int i2, float v, float v1) throws RemoteException {
-        bHaptics.playHaptic(a, s, i, i1, i2, v, v1);
+        synchronized (mutex) {
+            Log.d(bHaptics.TAG, "HapticEvent: Thread(" + Thread.currentThread().getId() + "), " + a + ", " + s + ", " + i + ", " + i1 + ", " + i2 + ", " + v + ", " + v1);
+            bHaptics.playHaptic(a, s, i, i1, i2, v, v1);
+        }
     }
 
     @Override
     public void hapticUpdateEvent(String a, String s, int i, float v) throws RemoteException {
-        bHaptics.updateRepeatingHaptic(a, s, i, v);
+        synchronized (mutex) {
+            Log.d(bHaptics.TAG, "HapticUpdateEvent: Thread(" + Thread.currentThread().getId() + "), " + a + ", " + s + ", " + i + ", " + v);
+            bHaptics.updateRepeatingHaptic(a, s, i, v);
+        }
     }
 
     @Override
     public void hapticStopEvent(String a, String s) throws RemoteException {
-        bHaptics.stopHaptic(a, s);
+        synchronized (mutex) {
+            Log.d(bHaptics.TAG, "HapticStopEvent: Thread(" + Thread.currentThread().getId() + "), " + a + ", " + s);
+            bHaptics.stopHaptic(a, s);
+        }
     }
 
     @Override
     public void hapticFrameTick() throws RemoteException {
-        bHaptics.frameTick();
+        synchronized (mutex) {
+            Log.d(bHaptics.TAG, "HapticFrameTick: Thread(" + Thread.currentThread().getId() + ")");
+            bHaptics.frameTick();
+        }
     }
 
     @Override
     public void hapticEnable() throws RemoteException {
-        bHaptics.enable(context);
+        synchronized (mutex) {
+            Log.d(bHaptics.TAG, "HapticEnable: Thread(" + Thread.currentThread().getId() + ")");
+            bHaptics.enable(context);
+        }
     }
 
     @Override
     public void hapticDisable() throws RemoteException {
-        bHaptics.disable();
+        synchronized (mutex) {
+            Log.d(bHaptics.TAG, "HapticDisable: Thread(" + Thread.currentThread().getId() + ")");
+            bHaptics.disable();
+        }
+    }
+
+    public void shutdown()
+    {
+        bHaptics.destroy();
     }
 }

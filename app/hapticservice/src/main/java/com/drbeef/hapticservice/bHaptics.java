@@ -75,7 +75,9 @@ public class bHaptics {
         public float level;
     };
     
-    private static final String TAG = "HapticService_bHaptics";
+    public static final String TAG = "HapticService_bHaptics";
+
+    public static final int BHAPTICS_PERMISSION_REQUEST = 1;
 
     private static Random rand = new Random();
 
@@ -98,11 +100,13 @@ public class bHaptics {
     {
         if (initialised)
         {
+            Log.d(TAG, "initialise called but already initialised");
             //Already initialised, but might need to rescan
             scanIfNeeded();
             return;
         }
 
+        Log.d(TAG, "BhapticsModule.initialize");
         BhapticsModule.initialize(context);
 
         scanIfNeeded();
@@ -112,189 +116,192 @@ public class bHaptics {
         /////////////////////////////////////////////////////////////////////////////////////
         //                             Doom3Quest  Patterns
         /////////////////////////////////////////////////////////////////////////////////////
+        Log.d(TAG, "BhapticsModule.initialize:  Registering Patterns");
 
         /*
             DAMAGE
         */
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Damage/Body_Heartbeat.tact", PositionType.Vest, "heartbeat", "health", 1.0f, 1.0f);
+        registerFromAsset(context, "Doom3Quest", "Damage/Body_Heartbeat.tact", PositionType.Vest, "heartbeat", "health", 1.0f, 1.0f);
 
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Damage/Body_DMG_Melee1.tact", "melee_left", "damage1");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Damage/Head/DMG_Melee1.tact", PositionType.Head, "melee_left", "damage"); // always play melee on the head too
+        registerFromAsset(context, "Doom3Quest", "Damage/Body_DMG_Melee1.tact", "melee_left", "damage1");
+        registerFromAsset(context, "Doom3Quest", "Damage/Head/DMG_Melee1.tact", PositionType.Head, "melee_left", "damage"); // always play melee on the head too
 
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Damage/Body_DMG_Melee2.tact", "melee_right", "damage");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Damage/Head/DMG_Melee2.tact", PositionType.Head, "melee_right", "damage"); // always play melee on the head too
+        registerFromAsset(context, "Doom3Quest", "Damage/Body_DMG_Melee2.tact", "melee_right", "damage");
+        registerFromAsset(context, "Doom3Quest", "Damage/Head/DMG_Melee2.tact", PositionType.Head, "melee_right", "damage"); // always play melee on the head too
 
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Damage/Body_DMG_Fireball.tact", "fireball", "damage");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Damage/Head/DMG_Explosion.tact", PositionType.Head, "fireball", "damage"); // always play fireball on the head too
+        registerFromAsset(context, "Doom3Quest", "Damage/Body_DMG_Fireball.tact", "fireball", "damage");
+        registerFromAsset(context, "Doom3Quest", "Damage/Head/DMG_Explosion.tact", PositionType.Head, "fireball", "damage"); // always play fireball on the head too
 
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Damage/Body_DMG_Bullet.tact", "bullet", "damage");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Damage/Head/DMG_HeadShot.tact", PositionType.Head, "bullet", "damage");
+        registerFromAsset(context, "Doom3Quest", "Damage/Body_DMG_Bullet.tact", "bullet", "damage");
+        registerFromAsset(context, "Doom3Quest", "Damage/Head/DMG_HeadShot.tact", PositionType.Head, "bullet", "damage");
 
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Damage/Body_DMG_Shotgun.tact", "shotgun", "damage");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Damage/Head/DMG_Explosion.tact", PositionType.Head, "shotgun", "damage");
+        registerFromAsset(context, "Doom3Quest", "Damage/Body_DMG_Shotgun.tact", "shotgun", "damage");
+        registerFromAsset(context, "Doom3Quest", "Damage/Head/DMG_Explosion.tact", PositionType.Head, "shotgun", "damage");
 
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Damage/Body_DMG_Fire.tact", "fire", "damage");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Damage/Body_DMG_Fire.tact", "noair", "damage");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Damage/Body_DMG_Falling.tact", "fall", "damage");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Damage/Body_Shield_Break.tact", "shield_break", "damage");
+        registerFromAsset(context, "Doom3Quest", "Damage/Body_DMG_Fire.tact", "fire", "damage");
+        registerFromAsset(context, "Doom3Quest", "Damage/Body_DMG_Fire.tact", "noair", "damage");
+        registerFromAsset(context, "Doom3Quest", "Damage/Body_DMG_Falling.tact", "fall", "damage");
+        registerFromAsset(context, "Doom3Quest", "Damage/Body_Shield_Break.tact", "shield_break", "damage");
 
          /*
             INTERACTIONS
          */
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Vest/Body_Shield_Get.tact", "pickup_shield", "pickup");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Arms/Pickup_L.tact", PositionType.ForearmL, "pickup_shield", "pickup");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Arms/Pickup_R.tact", PositionType.ForearmR, "pickup_shield", "pickup");
+        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Body_Shield_Get.tact", "pickup_shield", "pickup");
+        registerFromAsset(context, "Doom3Quest", "Interaction/Arms/Pickup_L.tact", PositionType.ForearmL, "pickup_shield", "pickup");
+        registerFromAsset(context, "Doom3Quest", "Interaction/Arms/Pickup_R.tact", PositionType.ForearmR, "pickup_shield", "pickup");
 
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Vest/Body_Weapon_Get.tact", "pickup_weapon", "pickup");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Arms/ItemPickup_Mirror.tact", PositionType.ForearmL, "pickup_weapon", "pickup");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Arms/ItemPickup.tact", PositionType.ForearmR, "pickup_weapon", "pickup");
+        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Body_Weapon_Get.tact", "pickup_weapon", "pickup");
+        registerFromAsset(context, "Doom3Quest", "Interaction/Arms/ItemPickup_Mirror.tact", PositionType.ForearmL, "pickup_weapon", "pickup");
+        registerFromAsset(context, "Doom3Quest", "Interaction/Arms/ItemPickup.tact", PositionType.ForearmR, "pickup_weapon", "pickup");
 
-        //registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Vest/Body_Ammo_Get.tact", "pickup_ammo", "pickup");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Arms/Ammo_L.tact", PositionType.ForearmL, "pickup_ammo", "pickup");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Arms/Ammo_R.tact", PositionType.ForearmR, "pickup_ammo", "pickup");
+        //registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Body_Ammo_Get.tact", "pickup_ammo", "pickup");
+        registerFromAsset(context, "Doom3Quest", "Interaction/Arms/Ammo_L.tact", PositionType.ForearmL, "pickup_ammo", "pickup");
+        registerFromAsset(context, "Doom3Quest", "Interaction/Arms/Ammo_R.tact", PositionType.ForearmR, "pickup_ammo", "pickup");
 
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Vest/Body_Healstation.tact", "healstation", "pickup");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Arms/Healthstation_L.tact", PositionType.ForearmL, "healstation", "pickup");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Arms/Healthstation_R.tact", PositionType.ForearmR, "healstation", "pickup");
+        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Body_Healstation.tact", "healstation", "pickup");
+        registerFromAsset(context, "Doom3Quest", "Interaction/Arms/Healthstation_L.tact", PositionType.ForearmL, "healstation", "pickup");
+        registerFromAsset(context, "Doom3Quest", "Interaction/Arms/Healthstation_R.tact", PositionType.ForearmR, "healstation", "pickup");
 
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Vest/DoorSlide.tact", PositionType.Vest, "doorslide", "door", 1.0f, 0.5f);
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Vest/Body_Scan.tact", PositionType.Vest, "scan", "environment", 1.0f, 1.15f);
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Vest/Body_Scan.tact", PositionType.Vest, "decontaminate", "environment", 0.5f, 0.75f);
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Vest/Body_Chamber_Up.tact", "liftup", "environment");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Vest/Body_Chamber_Down.tact", "liftdown", "environment");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Vest/Body_Machine.tact", "machine", "environment");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Vest/Spark.tact", "spark", "environment");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Head/Spark.tact", PositionType.Head, "spark", "environment", 0.5f, 0.5f);
+        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/DoorSlide.tact", PositionType.Vest, "doorslide", "door", 1.0f, 0.5f);
+        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Body_Scan.tact", PositionType.Vest, "scan", "environment", 1.0f, 1.15f);
+        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Body_Scan.tact", PositionType.Vest, "decontaminate", "environment", 0.5f, 0.75f);
+        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Body_Chamber_Up.tact", "liftup", "environment");
+        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Body_Chamber_Down.tact", "liftdown", "environment");
+        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Body_Machine.tact", "machine", "environment");
+        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Spark.tact", "spark", "environment");
+        registerFromAsset(context, "Doom3Quest", "Interaction/Head/Spark.tact", PositionType.Head, "spark", "environment", 0.5f, 0.5f);
 
         //Directional based looping steam pattern
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Vest/Steam.tact", PositionType.Vest, "steam_loop", "environment", 0.5f, 1.0f);
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Head/Steam.tact", PositionType.Head, "steam_loop", "environment", 0.5f, 1.0f);
+        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Steam.tact", PositionType.Vest, "steam_loop", "environment", 0.5f, 1.0f);
+        registerFromAsset(context, "Doom3Quest", "Interaction/Head/Steam.tact", PositionType.Head, "steam_loop", "environment", 0.5f, 1.0f);
         applicationEventToPatternKeyMap.get("Doom3Quest").get("steam_loop").forEach((haptic) -> {
             haptic.directional = true;
         });
 
         //Directional based looping flames pattern (use steam, but stronger)
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Vest/Steam.tact", PositionType.Vest, "flame_loop", "environment", 1.0f, 1.0f);
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Head/Steam.tact", PositionType.Head, "flame_loop", "environment", 1.0f, 1.0f);
+        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Steam.tact", PositionType.Vest, "flame_loop", "environment", 1.0f, 1.0f);
+        registerFromAsset(context, "Doom3Quest", "Interaction/Head/Steam.tact", PositionType.Head, "flame_loop", "environment", 1.0f, 1.0f);
         applicationEventToPatternKeyMap.get("Doom3Quest").get("flame_loop").forEach((haptic) -> {
             haptic.directional = true;
         });
 
         //Re use the spark for the steam blast
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Vest/Spark.tact", PositionType.Vest, "steam_blast", "environment", 1.0f, 0.25f);
+        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Spark.tact", PositionType.Vest, "steam_blast", "environment", 1.0f, 0.25f);
 
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Vest/Body_PDA_Open.tact", "pda_open", "pda");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Vest/Body_PDA_Open.tact", "pda_close", "pda");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Vest/Body_PDA_Alarm.tact", "pda_alarm", "pda");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Vest/Body_PDA_Touch.tact", "pda_touch", "pda");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Arms/PDA_Click_Mirror.tact", PositionType.ForearmL, "pda_touch", "pda");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Arms/PDA_Click.tact", PositionType.ForearmR, "pda_touch", "pda");
+        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Body_PDA_Open.tact", "pda_open", "pda");
+        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Body_PDA_Open.tact", "pda_close", "pda");
+        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Body_PDA_Alarm.tact", "pda_alarm", "pda");
+        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Body_PDA_Touch.tact", "pda_touch", "pda");
+        registerFromAsset(context, "Doom3Quest", "Interaction/Arms/PDA_Click_Mirror.tact", PositionType.ForearmL, "pda_touch", "pda");
+        registerFromAsset(context, "Doom3Quest", "Interaction/Arms/PDA_Click.tact", PositionType.ForearmR, "pda_touch", "pda");
 
 
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Vest/PlayerJump.tact", "jump_start", "player");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Interaction/Vest/PlayerLanding.tact", "jump_landing", "player");
+        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/PlayerJump.tact", "jump_start", "player");
+        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/PlayerLanding.tact", "jump_landing", "player");
 
 
         /*
             WEAPONS
          */
 
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/WeaponSwap.tact", PositionType.Right, "weapon_switch", "weapon");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Swap_R.tact", PositionType.ForearmR, "weapon_switch", "weapon");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/WeaponSwap_Mirror.tact", PositionType.Left, "weapon_switch", "weapon");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Swap_L.tact", PositionType.ForearmL, "weapon_switch", "weapon");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/WeaponSwap.tact", PositionType.Right, "weapon_switch", "weapon");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Swap_R.tact", PositionType.ForearmR, "weapon_switch", "weapon");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/WeaponSwap_Mirror.tact", PositionType.Left, "weapon_switch", "weapon");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Swap_L.tact", PositionType.ForearmL, "weapon_switch", "weapon");
 
         //Reload Start
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/Body_Reload.tact", "weapon_reload", "weapon");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Reload_L.tact", PositionType.ForearmL, "weapon_reload", "weapon");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Reload_R.tact", PositionType.ForearmR, "weapon_reload", "weapon");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/Body_Reload.tact", "weapon_reload", "weapon");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Reload_L.tact", PositionType.ForearmL, "weapon_reload", "weapon");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Reload_R.tact", PositionType.ForearmR, "weapon_reload", "weapon");
 
         //Reload Finish
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/ReloadFinish.tact", PositionType.Right, "weapon_reload_finish", "weapon");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/ReloadFinish.tact", PositionType.ForearmR, "weapon_reload_finish", "weapon");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/ReloadFinish_Mirror.tact", PositionType.Left, "weapon_reload_finish", "weapon");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/ReloadFinish_Mirror.tact", PositionType.ForearmL, "weapon_reload_finish", "weapon");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/ReloadFinish.tact", PositionType.Right, "weapon_reload_finish", "weapon");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/ReloadFinish.tact", PositionType.ForearmR, "weapon_reload_finish", "weapon");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/ReloadFinish_Mirror.tact", PositionType.Left, "weapon_reload_finish", "weapon");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/ReloadFinish_Mirror.tact", PositionType.ForearmL, "weapon_reload_finish", "weapon");
 
         //Chainsaw Idle
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/Chainsaw_LV1.tact", PositionType.Right, "chainsaw_idle", "weapon");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Chainsaw_LV2.tact", PositionType.ForearmR, "chainsaw_idle", "weapon");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/Chainsaw_LV1_Mirror.tact", PositionType.Left, "chainsaw_idle", "weapon");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Chainsaw_LV2_Mirror.tact", PositionType.ForearmL, "chainsaw_idle", "weapon");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/Chainsaw_LV1.tact", PositionType.Right, "chainsaw_idle", "weapon");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Chainsaw_LV2.tact", PositionType.ForearmR, "chainsaw_idle", "weapon");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/Chainsaw_LV1_Mirror.tact", PositionType.Left, "chainsaw_idle", "weapon");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Chainsaw_LV2_Mirror.tact", PositionType.ForearmL, "chainsaw_idle", "weapon");
 
         //Chainsaw Fire
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/Chainsaw_LV2.tact", PositionType.Right, "chainsaw_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Chainsaw_LV1.tact", PositionType.ForearmR, "chainsaw_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/Chainsaw_LV2_Mirror.tact", PositionType.Left, "chainsaw_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Chainsaw_LV1_Mirror.tact", PositionType.ForearmL, "chainsaw_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/Chainsaw_LV2.tact", PositionType.Right, "chainsaw_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Chainsaw_LV1.tact", PositionType.ForearmR, "chainsaw_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/Chainsaw_LV2_Mirror.tact", PositionType.Left, "chainsaw_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Chainsaw_LV1_Mirror.tact", PositionType.ForearmL, "chainsaw_fire", "weapon_fire");
 
         //Fist
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/Fist_Mirror.tact", PositionType.Left, "punch", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Fist_Mirror.tact", PositionType.ForearmL, "punch", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/Fist.tact", PositionType.Right, "punch", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Fist.tact", PositionType.ForearmR, "punch", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/Fist_Mirror.tact", PositionType.Left, "punch", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Fist_Mirror.tact", PositionType.ForearmL, "punch", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/Fist.tact", PositionType.Right, "punch", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Fist.tact", PositionType.ForearmR, "punch", "weapon_fire");
 
         //Pistol
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/Recoil_LV3_Mirror.tact", PositionType.Left, "pistol_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Recoil_LV3_Mirror.tact", PositionType.ForearmL, "pistol_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/Recoil_LV3.tact", PositionType.Right, "pistol_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Recoil_LV3.tact", PositionType.ForearmR, "pistol_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/Recoil_LV3_Mirror.tact", PositionType.Left, "pistol_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Recoil_LV3_Mirror.tact", PositionType.ForearmL, "pistol_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/Recoil_LV3.tact", PositionType.Right, "pistol_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Recoil_LV3.tact", PositionType.ForearmR, "pistol_fire", "weapon_fire");
 
         //Shotgun
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/Recoil_LV2_Mirror.tact", PositionType.Left, "shotgun_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Recoil_LV2_Mirror.tact", PositionType.ForearmL, "shotgun_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/Recoil_LV2.tact", PositionType.Right, "shotgun_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Recoil_LV2.tact", PositionType.ForearmR, "shotgun_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/Recoil_LV2_Mirror.tact", PositionType.Left, "shotgun_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Recoil_LV2_Mirror.tact", PositionType.ForearmL, "shotgun_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/Recoil_LV2.tact", PositionType.Right, "shotgun_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Recoil_LV2.tact", PositionType.ForearmR, "shotgun_fire", "weapon_fire");
 
         //Plasma Gun
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/Recoil_LV1_Mirror.tact", PositionType.Left, "plasmagun_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Recoil_LV1_Mirror.tact", PositionType.ForearmL, "plasmagun_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/Recoil_LV1.tact", PositionType.Right, "plasmagun_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Recoil_LV1.tact", PositionType.ForearmR, "plasmagun_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/Recoil_LV1_Mirror.tact", PositionType.Left, "plasmagun_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Recoil_LV1_Mirror.tact", PositionType.ForearmL, "plasmagun_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/Recoil_LV1.tact", PositionType.Right, "plasmagun_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Recoil_LV1.tact", PositionType.ForearmR, "plasmagun_fire", "weapon_fire");
 
         //Grenade
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/Body_Grenade_Init.tact", "handgrenade_init", "weapon_init");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/Body_Grenade_Throw.tact", "handgrenade_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Grenade_L.tact", PositionType.ForearmL, "handgrenade_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Grenade_R.tact", PositionType.ForearmR, "handgrenade_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/Body_Grenade_Init.tact", "handgrenade_init", "weapon_init");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/Body_Grenade_Throw.tact", "handgrenade_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Grenade_L.tact", PositionType.ForearmL, "handgrenade_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Grenade_R.tact", PositionType.ForearmR, "handgrenade_fire", "weapon_fire");
 
         //SMG
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/Recoil_LV1_Mirror.tact", PositionType.Left, "machinegun_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Recoil_LV1_Mirror.tact", PositionType.ForearmL, "machinegun_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/Recoil_LV1.tact", PositionType.Right, "machinegun_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Recoil_LV1.tact", PositionType.ForearmR, "machinegun_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/Recoil_LV1_Mirror.tact", PositionType.Left, "machinegun_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Recoil_LV1_Mirror.tact", PositionType.ForearmL, "machinegun_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/Recoil_LV1.tact", PositionType.Right, "machinegun_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Recoil_LV1.tact", PositionType.ForearmR, "machinegun_fire", "weapon_fire");
 
         //Chaingun
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/Body_Chaingun_Init.tact", "chaingun_init", "weapon_init");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/Recoil_LV2_Mirror.tact", PositionType.Left, "chaingun_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Recoil_LV2_Mirror.tact", PositionType.ForearmL, "chaingun_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/Recoil_LV2.tact", PositionType.Right, "chaingun_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Recoil_LV2.tact", PositionType.ForearmR, "chaingun_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/Body_Chaingun_Init.tact", "chaingun_init", "weapon_init");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/Recoil_LV2_Mirror.tact", PositionType.Left, "chaingun_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Recoil_LV2_Mirror.tact", PositionType.ForearmL, "chaingun_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/Recoil_LV2.tact", PositionType.Right, "chaingun_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Recoil_LV2.tact", PositionType.ForearmR, "chaingun_fire", "weapon_fire");
 
         //BFG9000
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/Body_BFG9000_Init.tact", "bfg_init", "weapon_init");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/Recoil_LV5_Mirror.tact", PositionType.Left, "bfg_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Recoil_LV5_Mirror.tact", PositionType.ForearmL, "bfg_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/Recoil_LV5.tact", PositionType.Right, "bfg_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Recoil_LV5.tact", PositionType.ForearmR, "bfg_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/Body_BFG9000_Init.tact", "bfg_init", "weapon_init");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/Recoil_LV5_Mirror.tact", PositionType.Left, "bfg_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Recoil_LV5_Mirror.tact", PositionType.ForearmL, "bfg_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/Recoil_LV5.tact", PositionType.Right, "bfg_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Recoil_LV5.tact", PositionType.ForearmR, "bfg_fire", "weapon_fire");
 
         //Rocket Launcher
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/Recoil_LV4_Mirror.tact", PositionType.Left, "rocket_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Recoil_LV4_Mirror.tact", PositionType.ForearmL, "rocket_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/Recoil_LV4.tact", PositionType.Right, "rocket_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/Recoil_LV4.tact", PositionType.ForearmR, "rocket_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/Recoil_LV4_Mirror.tact", PositionType.Left, "rocket_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Recoil_LV4_Mirror.tact", PositionType.ForearmL, "rocket_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/Recoil_LV4.tact", PositionType.Right, "rocket_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/Recoil_LV4.tact", PositionType.ForearmR, "rocket_fire", "weapon_fire");
 
         //Soul Cube
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/SoulCube.tact", PositionType.Right, "soul_cube_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/SoulCube.tact", PositionType.ForearmR, "soul_cube_fire", "weapon_fire", 2.0f, 1.0f);
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Vest/SoulCube_Mirror.tact", PositionType.Left, "soul_cube_fire", "weapon_fire");
-        registerFromAsset(context, "Doom3Quest", "bHaptics/Doom3Quest/Weapon/Arms/SoulCube_Mirror.tact", PositionType.ForearmL, "soul_cube_fire", "weapon_fire", 2.0f, 1.0f);
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/SoulCube.tact", PositionType.Right, "soul_cube_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/SoulCube.tact", PositionType.ForearmR, "soul_cube_fire", "weapon_fire", 2.0f, 1.0f);
+        registerFromAsset(context, "Doom3Quest", "Weapon/Vest/SoulCube_Mirror.tact", PositionType.Left, "soul_cube_fire", "weapon_fire");
+        registerFromAsset(context, "Doom3Quest", "Weapon/Arms/SoulCube_Mirror.tact", PositionType.ForearmL, "soul_cube_fire", "weapon_fire", 2.0f, 1.0f);
+
+        Log.d(TAG, "BhapticsModule.initialize:  " + applicationEventToPatternKeyMap.get("Doom3Quest").size() + " Patterns Resgitered for app: Doom3Quest");
 
         initialised = true;
     }
 
     public static void registerFromAsset(Context context, String application, String filename, PositionType type, String key, String group, float intensity, float duration)
     {
-        String content = read(context, filename);
+        String content = read(context, "bHaptics/" + application + "/" + filename);
         if (content != null) {
 
             String hapticKey = key + "_" + type.name();
@@ -341,9 +348,10 @@ public class bHaptics {
     public static void destroy()
     {
         if (initialised) {
-            BhapticsModule.destroy();
             initialised = false;
+            BhapticsModule.destroy();
         }
+        enabled = false;
     }
 
     public static boolean hasPermissions() {
@@ -359,14 +367,14 @@ public class bHaptics {
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
                             Manifest.permission.READ_EXTERNAL_STORAGE,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    2);
+                    BHAPTICS_PERMISSION_REQUEST);
         }
     }
 
     public static boolean checkPermissionsAndInitialize(Context ctx) {
         context = ctx;
         if (hasPermissions()) {
-            // Permissions have already been granted.
+            initialise();
             return true;
         }
 
@@ -381,8 +389,6 @@ public class bHaptics {
         if (!enabled)
         {
             if (checkPermissionsAndInitialize(context)) {
-                initialise();
-
                 enabled = true;
             }
         }
@@ -390,8 +396,8 @@ public class bHaptics {
 
     public static void disable()
     {
-        enabled = false;
-        stopStreaming();
+        //stopStreaming();
+        destroy();
     }
 
     public static void startStreaming() {
@@ -779,6 +785,7 @@ public class bHaptics {
 
         }
 
-        startStreaming();
+        //causing a crash at the moment?!
+        //startStreaming();
     }
 }

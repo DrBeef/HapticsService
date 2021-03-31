@@ -17,7 +17,7 @@ public class MainActivity extends Activity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] results) {
 
-        if (requestCode == 2) {
+        if (requestCode == bHaptics.BHAPTICS_PERMISSION_REQUEST) {
             //Quit for now
             finish();
             System.exit(0);

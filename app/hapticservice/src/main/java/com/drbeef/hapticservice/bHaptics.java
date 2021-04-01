@@ -41,9 +41,11 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import java.util.Vector;
 
@@ -110,7 +112,9 @@ public class bHaptics {
 
     private static Map<String, Map<String, Vector<Haptic>>> applicationEventToPatternKeyMap = new HashMap<>();
 
-    private static Map<String, Vector<Haptic>> repeatingHaptics = new HashMap<>();
+    private static Map<String, Map<String, Haptic>> repeatingHaptics = new HashMap<>();
+
+    private static Set<String> ignoreList = new HashSet<String>();
 
     public static void initialise()
     {
@@ -184,25 +188,26 @@ public class bHaptics {
         registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Body_Chamber_Up.tact", "liftup", "environment");
         registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Body_Chamber_Down.tact", "liftdown", "environment");
         registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Body_Machine.tact", "machine", "environment");
-        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Spark.tact", "spark", "environment");
-        registerFromAsset(context, "Doom3Quest", "Interaction/Head/Spark.tact", PositionType.Head, "spark", "environment", 0.5f, 0.5f);
+
+        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Spark.tact", "spark", "local_effects");
+        registerFromAsset(context, "Doom3Quest", "Interaction/Head/Spark.tact", PositionType.Head, "spark", "local_effects", 0.5f, 0.5f);
 
         //Directional based looping steam pattern
-        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Steam.tact", PositionType.Vest, "steam_loop", "environment", 0.5f, 1.0f);
-        registerFromAsset(context, "Doom3Quest", "Interaction/Head/Steam.tact", PositionType.Head, "steam_loop", "environment", 0.5f, 1.0f);
+        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Steam.tact", PositionType.Vest, "steam_loop", "local_effects", 0.5f, 1.0f);
+        registerFromAsset(context, "Doom3Quest", "Interaction/Head/Steam.tact", PositionType.Head, "steam_loop", "local_effects", 0.5f, 1.0f);
         applicationEventToPatternKeyMap.get("Doom3Quest").get("steam_loop").forEach((haptic) -> {
             haptic.directional = true;
         });
 
         //Directional based looping flames pattern (use steam, but stronger)
-        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Steam.tact", PositionType.Vest, "flame_loop", "environment", 1.0f, 1.0f);
-        registerFromAsset(context, "Doom3Quest", "Interaction/Head/Steam.tact", PositionType.Head, "flame_loop", "environment", 1.0f, 1.0f);
+        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Steam.tact", PositionType.Vest, "flame_loop", "local_effects", 1.0f, 1.0f);
+        registerFromAsset(context, "Doom3Quest", "Interaction/Head/Steam.tact", PositionType.Head, "flame_loop", "local_effects", 1.0f, 1.0f);
         applicationEventToPatternKeyMap.get("Doom3Quest").get("flame_loop").forEach((haptic) -> {
             haptic.directional = true;
         });
 
         //Re use the spark for the steam blast
-        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Spark.tact", PositionType.Vest, "steam_blast", "environment", 1.0f, 0.25f);
+        registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Spark.tact", PositionType.Vest, "steam_blast", "local_effects", 1.0f, 0.25f);
 
         registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Body_PDA_Open.tact", "pda_open", "pda");
         registerFromAsset(context, "Doom3Quest", "Interaction/Vest/Body_PDA_Open.tact", "pda_close", "pda");
@@ -458,7 +463,7 @@ public class bHaptics {
     {
         if (enabled && hasPairedDevice) {
             repeatingHaptics.forEach((key, haptics) -> {
-                haptics.forEach((haptic) -> {
+                haptics.forEach((altKey, haptic) -> {
                     if (haptic.level < 10) {
                         if (player.isPlaying(haptic.altKey)) {
                             player.turnOff(haptic.altKey);
@@ -506,6 +511,12 @@ public class bHaptics {
     public static void playHaptic(String application, String event, int position, int flags, float intensity, float angle, float yHeight)
     {
         if (enabled && hasPairedDevice) {
+
+            if (ignoreList.contains(event))
+            {
+                return;
+            }
+
             String key = getHapticEventKey(application, event);
 
             //Log.v(TAG, event);
@@ -611,17 +622,18 @@ public class bHaptics {
 
                             if (!repeatingHaptics.containsKey(key))
                             {
-                                Vector<Haptic> v = new Vector<>();
-                                v.add(repeatingHaptic);
+                                Map<String, Haptic> v = new HashMap<>();
+                                v.put(repeatingHaptic.altKey, repeatingHaptic);
                                 repeatingHaptics.put(key, v);
                             }
                             else
                             {
-                                Vector<Haptic> v = repeatingHaptics.get(key);
-                                v.add(repeatingHaptic);
+                                Map<String, Haptic> v = repeatingHaptics.get(key);
+                                v.put(repeatingHaptic.altKey, repeatingHaptic);
                             }
                         }
-                        else {
+                        else if (flIntensity > 0)
+                        {
                             player.submitRegistered(haptic.key, haptic.altKey, flIntensity, flDuration, flAngle, yHeight);
                         }
                     }
@@ -630,6 +642,7 @@ public class bHaptics {
             else
             {
                 Log.v(TAG, "Unknown Event: " + event);
+                ignoreList.add(event);
             }
         }
     }
@@ -703,8 +716,8 @@ public class bHaptics {
 
             if (repeatingHaptics.containsKey(key))
             {
-                repeatingHaptics.get(key).forEach((haptic) -> {
-                    player.turnOff(haptic.altKey);
+                repeatingHaptics.get(key).forEach((altKey, haptic) -> {
+                    player.turnOff(altKey);
                 });
 
                 repeatingHaptics.remove(key);
@@ -720,7 +733,7 @@ public class bHaptics {
 
             if (repeatingHaptics.containsKey(key))
             {
-                repeatingHaptics.get(key).forEach((haptic) -> {
+                repeatingHaptics.get(key).forEach((altKey, haptic) -> {
                     if (haptic.directional) {
                         haptic.rotation = angle;
                     }

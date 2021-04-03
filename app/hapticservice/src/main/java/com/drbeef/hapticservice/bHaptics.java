@@ -629,7 +629,9 @@ public class bHaptics {
                             else
                             {
                                 Map<String, Haptic> v = repeatingHaptics.get(key);
-                                v.put(repeatingHaptic.altKey, repeatingHaptic);
+                                if (!v.containsKey(repeatingHaptic.altKey)) {
+                                    v.put(repeatingHaptic.altKey, repeatingHaptic);
+                                }
                             }
                         }
                         else if (flIntensity > 0)

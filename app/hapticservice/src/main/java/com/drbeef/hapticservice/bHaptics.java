@@ -522,7 +522,7 @@ public class bHaptics {
             //Log.v(TAG, event);
 
             //Special rumble effect that changes intensity per frame
-            if (key.compareTo("rumble") == 0)
+            if (key.contains("rumble"))
             {
                 {
                     float highDuration = angle;
@@ -536,8 +536,12 @@ public class bHaptics {
                         flipflop = 1 - flipflop;
                     }
 
-                    player.submitDot("rumble_front", PositionType.VestFront, vector, (int) highDuration);
-                    player.submitDot("rumble_back", PositionType.VestBack, vector, (int) highDuration);
+                    if (key.contains("front")) {
+                        player.submitDot("rumble_front", PositionType.VestFront, vector, (int) highDuration);
+                    }
+                    else {
+                        player.submitDot("rumble_back", PositionType.VestBack, vector, (int) highDuration);
+                    }
                 }
             }
             else if (applicationEventToPatternKeyMap.get(application).containsKey(key)) {

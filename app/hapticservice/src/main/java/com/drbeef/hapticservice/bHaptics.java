@@ -55,8 +55,8 @@ public class bHaptics {
     
     public static class Haptic
     {
-        Haptic(PositionType type, String key, String altKey, String group, float intensity, float duration) {
-            this.type = type;
+        Haptic(PositionType positionType, String key, String altKey, String group, float intensity, float duration) {
+            this.positionType = positionType;
             this.key = key;
             this.altKey = altKey;
             this.group = group;
@@ -65,10 +65,11 @@ public class bHaptics {
             this.duration = duration;
             this.rotation = 0;
             this.level = 100;
+            this.started = 0;
         }
 
         public Haptic(Haptic haptic) {
-            this.type = haptic.type;
+            this.positionType = haptic.positionType;
             this.key = haptic.key;
             this.altKey = haptic.altKey;
             this.group = haptic.group;
@@ -77,6 +78,7 @@ public class bHaptics {
             this.duration = haptic.duration;
             this.rotation = 0;
             this.level = 100;
+            this.started = 0;
         }
 
         public final String key;
@@ -85,8 +87,9 @@ public class bHaptics {
 
         public boolean directional; // can be changed for specific repeating patterns
         public final float duration;
-        public final PositionType type;
+        public final PositionType positionType;
         public final float intensity;
+        public long started; // used for repeating haptics - time (in ms) when started
 
         //These two values can be changed over time when playing a looping effect
         public float rotation;
@@ -461,21 +464,27 @@ public class bHaptics {
 
     public static void frameTick()
     {
+        long now = System.currentTimeMillis();
         if (enabled && hasPairedDevice) {
             repeatingHaptics.forEach((key, haptics) -> {
                 haptics.forEach((altKey, haptic) -> {
                     if (haptic.level < 10) {
-                        if (player.isPlaying(haptic.altKey)) {
+                        if (haptic.started != 0 &&
+                            player.isPlaying(haptic.altKey)) {
                             player.turnOff(haptic.altKey);
                         }
-                    } else if (!player.isPlaying(haptic.altKey)) {
+                        haptic.started = 0;
+                    } else if (haptic.started == 0 ||
+                            (((now - haptic.started) > 150) && // don't check whether a haptic is still playing for 150 ms
+                            !player.isPlaying(haptic.altKey))) {
                         //If a repeating haptic isn't playing, start it again with last known values
                         float flIntensity = ((haptic.level / 100.0F) * haptic.intensity);
 
-                        if (haptic.type != PositionType.Head ||
+                        if (haptic.positionType != PositionType.Head ||
                                 //If the haptic is head based, then only play if it is within a certain FOV
                                 (haptic.rotation >= -360 && haptic.rotation <= -315) || (haptic.rotation >= 0 && haptic.rotation <= 45)) {
                             player.submitRegistered(haptic.key, haptic.altKey, flIntensity, haptic.duration, haptic.rotation, 0);
+                            haptic.started = now;
                         }
                     }
                 });
@@ -570,8 +579,8 @@ public class bHaptics {
                             //If playing left position and haptic type is right, don;t play that one
                             if (position == 1)
                             {
-                                if (haptic.type == PositionType.ForearmR ||
-                                        haptic.type == PositionType.Right) {
+                                if (haptic.positionType == PositionType.ForearmR ||
+                                        haptic.positionType == PositionType.Right) {
                                     continue;
                                 }
                             }
@@ -579,20 +588,20 @@ public class bHaptics {
                             //If playing right position and haptic type is left, don;t play that one
                             if (position == 2)
                             {
-                                if (haptic.type == PositionType.ForearmL ||
-                                        haptic.type == PositionType.Left) {
+                                if (haptic.positionType == PositionType.ForearmL ||
+                                        haptic.positionType == PositionType.Left) {
                                     continue;
                                 }
                             }
 
                             //Are we playing a "head only" pattern?
                             if (position == 3 &&
-                                    (haptic.type != PositionType.Head || !manager.isDeviceConnected(BhapticsManager.DeviceType.Head)))
+                                    (haptic.positionType != PositionType.Head || !manager.isDeviceConnected(BhapticsManager.DeviceType.Head)))
                             {
                                 continue;
                             }
 
-                            if (haptic.type == PositionType.Head) {
+                            if (haptic.positionType == PositionType.Head) {
                                 //Is this a "don't play on head" effect?
                                 if (position < 3) {
                                     continue;
@@ -734,6 +743,11 @@ public class bHaptics {
     public static void updateRepeatingHaptic(String application, String event, float intensity, float angle) {
 
         if (enabled && hasPairedDevice) {
+
+            if (ignoreList.contains(event))
+            {
+                return;
+            }
 
             String key = getHapticEventKey(application, event);
 

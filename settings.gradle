@@ -1,3 +1,3 @@
-include ':service_app'
 include ':haptic_service'
+include ':sample_client_app'
 rootProject.name = "HapticsService"

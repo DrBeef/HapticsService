@@ -1,4 +1,4 @@
-package com.bhaptics.haptic_service;
+package com.drbeef.externalhapticsservice;
 
 import org.junit.Test;
 

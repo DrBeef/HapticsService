@@ -1,4 +1,4 @@
-package com.bhaptics.haptic_service;
+package com.drbeef.externalhapticsservice;
 
 import android.content.Context;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -19,7 +19,5 @@ public class ExampleInstrumentedTest {
     @Test
     public void useAppContext() {
         // Context of the app under test.
-        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("com.bhaptics.haptic_service.test", appContext.getPackageName());
     }
 }

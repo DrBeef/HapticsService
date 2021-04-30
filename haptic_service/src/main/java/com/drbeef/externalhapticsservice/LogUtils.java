@@ -2,7 +2,7 @@ package com.drbeef.externalhapticsservice;
 
 class LogUtils {
 
-    private static final String LOG_PREFIX = "bhaptics_log(" + BuildConfig.VERSION_NAME + ")";
+    private static final String LOG_PREFIX = "drbeef_log(" + BuildConfig.VERSION_NAME + ")";
     private static final int LOG_PREFIX_LENGTH = LOG_PREFIX.length();
     private static final int MAX_LOG_TAG_LENGTH = 30;
 

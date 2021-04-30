@@ -14,7 +14,7 @@ import com.drbeef.externalhapticsservice.HapticServiceClient;
 import com.drbeef.externalhapticsservice.IHapticService;
 
 public class SampleActivity extends AppCompatActivity {
-    public static final String TAG = "bhaptics_activity";
+    public static final String TAG = SampleActivity.class.getSimpleName();
 
     private LinearLayout layoutParent;
     private TextView statusText;

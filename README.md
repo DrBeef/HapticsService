@@ -1,7 +1,5 @@
 # HapticsService
- bHaptics HapticService for use with DrBeef ports
+ HapticService for use with DrBeef ports - Third party Haptic Suit/Accessory vendors can (such as the excellent bHaptics) can implement this interface to provide haptic feedback for the Team Beef ports
 
-* bhaptics_app: sample bhaptics app to demenstrate the concept.
 * haptic_service: interface library to use `HapticsService`
-* drbeef: DrBeef's bhaptics implementation library. bhaptics_app will load this library.
 * sample_client_app: sample client example of `HapticsService`

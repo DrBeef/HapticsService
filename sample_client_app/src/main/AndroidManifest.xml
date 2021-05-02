@@ -2,12 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.thirdparty.test">
 
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-
     <!--  Android  30부터 추가됨 만약에 bindService false return 하는 경우.
     Visiblity를 설정하는 게 들어가는듯!!!!
     찾아보니  https://developer.android.com/training/package-visibility/declaring#automatic  -->
+
+    <!--
+        https://developers.google.com/ar/develop/unity/android-11-build
+    -->
     <queries>
         <intent>
             <action android:name="com.bhaptics.player.BhapticsHapticService" />

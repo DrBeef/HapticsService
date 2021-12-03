@@ -26,11 +26,13 @@ public class HapticServiceClient implements ServiceConnection {
     private boolean hasHapticService;
     private IHapticService hapticsService = null;
 
+    private Intent serviceIntent = null;
 
-    public HapticServiceClient(Context context, HapticServiceCallback callback) {
+    public HapticServiceClient(Context context, HapticServiceCallback callback, Intent serviceIntent) {
         callbacks = new ArrayList<>();
         callbacks.add(callback);
         this.context = context;
+        this.serviceIntent = serviceIntent;
 
         boolean res = bindService();
         if (res) {
@@ -42,7 +44,7 @@ public class HapticServiceClient implements ServiceConnection {
 
     public boolean bindService() {
         return context.bindService(
-                getServiceIntent(),
+                serviceIntent,
                 this,
                 Context.BIND_AUTO_CREATE
         );
@@ -55,7 +57,7 @@ public class HapticServiceClient implements ServiceConnection {
 
         Log.d(TAG, "stopBinding ");
         try {
-            context.stopService(getServiceIntent());
+            context.stopService(serviceIntent);
         } catch (Exception e) {
             Log.e(TAG, "stopBinding: " + e.getMessage(), e);
         }
@@ -86,12 +88,12 @@ public class HapticServiceClient implements ServiceConnection {
         hapticsService = null;
         notifyCallback(STATE_DISCONNECTED);
     }
-
+/*
     private Intent getServiceIntent() {
         return new Intent(HapticsConstants.HAPTICS_ACTION_FILTER)
                 .setPackage(HapticsConstants.HAPTICS_PACKAGE);
     }
-
+*/
     private void notifyCallback(int state) {
         for (HapticServiceCallback callback : callbacks) {
             callback.onBindChange(state, StateConstants.stateToDesc(state));

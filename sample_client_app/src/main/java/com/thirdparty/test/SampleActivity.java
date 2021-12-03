@@ -2,6 +2,7 @@ package com.thirdparty.test;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.drbeef.externalhapticsservice.HapticServiceClient;
+import com.drbeef.externalhapticsservice.HapticsConstants;
 import com.drbeef.externalhapticsservice.IHapticService;
 
 public class SampleActivity extends AppCompatActivity {
@@ -56,7 +58,9 @@ public class SampleActivity extends AppCompatActivity {
             }
             hapticServiceStatus = "HapticService: " +  desc;
             updateText();
-        });
+        }, new Intent(HapticsConstants.BHAPTICS_ACTION_FILTER)
+                .setPackage(HapticsConstants.BHAPTICS_PACKAGE));
+
         testButton = findViewById(R.id.testButton);
         testButton.setOnClickListener(clickListener);
     }

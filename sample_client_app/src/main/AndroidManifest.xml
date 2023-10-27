@@ -22,7 +22,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MockBhapticsPlayer">
-        <activity android:name=".SampleActivity">
+        <activity android:exported="true" android:name=".SampleActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
